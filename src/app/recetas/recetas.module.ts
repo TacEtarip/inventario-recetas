@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RecetasComponent } from './recetas.component';
+import { RecetaCompletaComponent } from './receta-completa.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -9,12 +9,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { recetasRouting } from './recetas.routing';
 
 @NgModule({
   declarations: [
-    RecetasComponent
+    RecetasComponent,
+    RecetaCompletaComponent
   ],
   imports: [
     CommonModule,
@@ -24,7 +28,10 @@ import { recetasRouting } from './recetas.routing';
     MatFormFieldModule,
     MatInputModule,
     recetasRouting,
-    MatButtonModule
+    MatButtonModule,
+    MatExpansionModule,
+    MatListModule,
+    MatMenuModule
   ]
 })
 export class RecetasModule { }

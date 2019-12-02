@@ -1,0 +1,49 @@
+<section class="navegacion">
+  <h1>{{receta.nombre}}</h1>
+  <mat-divider class="divider"></mat-divider>
+</section>
+<section class="main-rc">
+  <section class="ingredientes">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Ingredientes
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-list>
+          <h3 mat-subheader>Principales</h3>
+          <mat-list-item *ngFor="let ingrediente of receta.ingredientes" role="listitem">
+            <mat-icon class="itsReady" mat-list-icon>check_circle</mat-icon>
+            <h4 mat-line>{{ingrediente.nombre}}</h4>
+            <h5>({{ingrediente.cantidad_necesaria}})</h5>
+            <p mat-line>Tienes 5</p>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <h3 *ngIf="getNumberOfExtraIngredients()" mat-subheader>Otros</h3>
+          <mat-list-item *ngFor="let iExtra of receta.ingredientes_extra" role="listitem">
+            <mat-icon class="alwaysReady" mat-list-icon>arrow_right</mat-icon>
+            <h4 mat-line>{{iExtra}}</h4>
+          </mat-list-item>
+        </mat-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </section>
+  <mat-accordion class="example-headers-align">
+    <mat-expansion-panel *ngFor="let paso of receta.pasos" [expanded]="step === paso.step"
+      (opened)="setStep(paso.step)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Paso N° {{paso.step + 1}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-row>
+        <button mat-button color="warn" (click)="prevStep()">Anterior</button>
+        <button mat-button color="primary" (click)="nextStep()">Siguiente</button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+
+
+  </mat-accordion>
+</section>

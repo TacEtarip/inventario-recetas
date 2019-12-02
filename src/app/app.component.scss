@@ -20,6 +20,8 @@
   background-color: #FB8C00;
 }
 
+.fixed {}
+
 body {
 
   font-family: Lato, "Helvetica Neue", sans-serif;
@@ -28,6 +30,7 @@ body {
 
 @supports (grid-area: auto) {
   .all-content {
+    overflow: hidden;
     display: grid;
     grid-template-areas:
       "header"
@@ -36,7 +39,10 @@ body {
   }
 
   header {
-    position: relative;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    //position: relative;
     border-bottom: 1px solid hsl(0, 0%, 90%);
     background-color: nth($list-red, 2);
     grid-area: header;

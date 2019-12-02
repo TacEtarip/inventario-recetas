@@ -1,8 +1,31 @@
 @import '../partials-scss/variables';
 
+
+/*.main-recetas-cards {
+  overflow: scroll;
+  height: 65vh;
+}*/
+
+.navegacion {
+
+
+  padding: 0.65em;
+  width: calc(100% - 1.30em);
+  background-color: white;
+  position: fixed;
+  top: 62px;
+
+  .selectorBTN {
+    width: 30%;
+  }
+}
+
 .sAgregar {
+  //position: fixed;
+  //right: 0.75em;
+  padding-top: 2.2em;
   display: flex;
-  margin-bottom: 1.5em;
+  margin-bottom: 0;
   justify-content: flex-end;
 
   button {
@@ -25,6 +48,7 @@
 
 .main-recetas {
   padding: 3em .65em;
+  padding-top: 17em;
 
   .toogle-buttons {
     margin-bottom: 0.5em;
@@ -67,6 +91,7 @@ a h2 {
 }
 
 .controles {
+  padding-top: 1.6em;
   display: flex;
   justify-content: space-between;
   margin-bottom: 1em;
@@ -130,7 +155,7 @@ a h2 {
       a {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: repeat(3, 1fr) 2em repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
         padding: 0;
         // padding-right: 1em;
         text-align: left;

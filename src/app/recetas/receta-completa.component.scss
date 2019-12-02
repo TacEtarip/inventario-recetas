@@ -1,0 +1,47 @@
+@import '../partials-scss/variables';
+
+.navegacion {
+
+
+  padding: 0.65em;
+  width: calc(100% - 1.30em);
+  background-color: white;
+  position: fixed;
+  top: 62px;
+  z-index: 500;
+
+  h1 {
+    padding-top: 2.1em;
+    margin: 0;
+    color: nth($list-red, 2);
+  }
+
+  .divider {
+    padding-bottom: 1em;
+  }
+}
+
+.main-rc {
+  padding: 13.5em .65em;
+}
+
+.ingredientes {
+  margin-bottom: 1em;
+}
+
+.mat-list-text {
+  padding: 0;
+}
+
+.notReady {
+  color: rgb(201, 201, 201);
+}
+
+.itsReady {
+  color: rgb(22, 136, 22);
+}
+
+.alwaysReady {
+  color: nth($list-red, 2);
+  ;
+}

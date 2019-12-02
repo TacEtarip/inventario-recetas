@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
 import { fromEvent, BehaviorSubject } from 'rxjs';
 import { map, debounceTime, pluck, distinctUntilChanged } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { RecetasService } from '../recetas.service';
 import { debug } from 'util';
 @Component({
   selector: 'app-recetas',
@@ -9,37 +11,61 @@ import { debug } from 'util';
   styleUrls: ['./recetas.component.scss']
 })
 export class RecetasComponent implements OnInit {
+
+  menuOpc = ['Todas', 'Listas', 'No Listas'];
+
+  menuActivo = 'Todas';
+
   form: FormGroup;
 
   ordenadoAscendente = null;
 
   busquedaValor = '';
 
-  resetasLista = [
-    { url: 'assets/frijoles.jpg', nombre: 'Frijoles', descripcion: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { url: 'assets/ceviche.jpg', nombre: 'Ceviche', descripcion: 'El ceviche es un plato típico de la gastronomía latinoamericana en general, teniendo cada país su particular estilo de preparación.' },
-    { url: 'assets/papa.jpg', nombre: 'Papa Rellena', descripcion: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { url: 'assets/ensalada.jpg', nombre: 'Ensalada De Frutas', descripcion: 'Nada más nutritivo, sano, delicioso y fresco para un día de calor que una ensalada de frutas. Es uno de los platos más fáciles de preparar, pero aun así de los más nutritivos, saludables y con pocas calorías para cuidar nuestra salud y a la misma vez comer rico.' },
-  ];
+  recetasLista;
+
+  recetasYaListas = [];
+
+  recetasNoListas = [];
+
+  listaActual;
 
   busquedaLista: any[] = [];
 
-  resetasListaBH$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
 
-  constructor(private formBuilder: FormBuilder) { }
+  recetasListaBH$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
+
+  constructor(
+    private recetasService: RecetasService,
+    private router: Router,
+    private formBuilder: FormBuilder) {
+    this.recetasLista = recetasService.recetasLista;
+  }
 
   ngOnInit() {
+    this.listaActual = this.recetasLista;
 
-    this.resetasListaBH$.next(this.resetasLista);
-
-    this.resetasListaBH$.subscribe(() => {
-      if (this.ordenadoAscendente === null) {
-        this.ordernarListaAscendente();
-      } else if (this.ordenadoAscendente === true) {
-        this.ordernarListaAscendente();
+    this.recetasLista.forEach(receta => {
+      if (receta.listo) {
+        this.recetasYaListas.push(receta);
       } else {
-        this.ordernarListaDescendente();
+        this.recetasNoListas.push(receta);
       }
+    });
+    // console.log(this.recetasNoListas);
+
+    this.recetasListaBH$.next(this.recetasService.recetasLista);
+
+    this.recetasListaBH$.subscribe(() => {
+      /* if (this.ordenadoAscendente === null) {
+         this.ordernarListaAscendente();
+       } else if (this.ordenadoAscendente === true) {
+         this.ordernarListaAscendente();
+       } else {
+         this.ordernarListaDescendente();
+       }*/
+      this.ordernarListaAscendente();
+      console.log('hola');
     });
 
     const cajaDeBusqueda = document.getElementById('busqueda');
@@ -57,7 +83,27 @@ export class RecetasComponent implements OnInit {
     });
   }
 
+  cambiarShow(index) {
 
+    if (this.menuOpc[index] === 'Todas') {
+      this.listaActual = this.recetasLista;
+      this.recetasListaBH$.next(this.recetasLista);
+    } else if (this.menuOpc[index] === 'Listas') {
+      this.listaActual = this.recetasYaListas;
+      this.recetasListaBH$.next(this.recetasYaListas);
+    } else {
+      this.listaActual = this.recetasNoListas;
+      this.recetasListaBH$.next(this.recetasNoListas);
+    }
+    const temporal = this.menuOpc[0];
+    this.menuOpc[0] = this.menuOpc[index];
+    this.menuOpc[index] = temporal;
+
+  }
+
+  irReceta(id) {
+    this.router.navigate(['/recetas/', 'id-receta:' + id]);
+  }
 
   buscarReceta() {
     const listaTemporal: string[] = [];
@@ -66,10 +112,11 @@ export class RecetasComponent implements OnInit {
 
     this.busquedaValor = this.busquedaValor.toUpperCase().replace(/\s/g, '').trim();
     if (this.busquedaValor.length <= 3) {
-      this.resetasListaBH$.next(this.resetasLista);
+
+      this.recetasListaBH$.next(this.listaActual);
       return;
     } else {
-      this.resetasListaBH$.value.forEach(element => {
+      this.recetasListaBH$.value.forEach(element => {
         listaTemporal.push(element.nombre.toUpperCase().replace(/\s/g, '').trim());
       });
 
@@ -78,7 +125,7 @@ export class RecetasComponent implements OnInit {
 
       listaTemporal.forEach(element => {
         if (element.includes(this.busquedaValor)) {
-          this.busquedaLista.push(this.resetasListaBH$.value[elementoIn]);
+          this.busquedaLista.push(this.recetasListaBH$.value[elementoIn]);
           hasInclusive = true;
         }
         elementoIn++;
@@ -107,18 +154,18 @@ export class RecetasComponent implements OnInit {
       });*/
 
       if (this.busquedaLista.length !== 0) {
-        this.resetasListaBH$.next(this.busquedaLista);
+        this.recetasListaBH$.next(this.busquedaLista);
       }
 
     }
   }
 
   ordernarListaAscendente() {
-    if (this.ordenadoAscendente) {
+    /*if (this.ordenadoAscendente) {
       return;
-    }
-    this.resetasListaBH$.value.sort((a, b) => (a.nombre > b.nombre) ? 1 : -1);
-    this.ordenadoAscendente = true;
+    }*/
+    this.recetasListaBH$.value.sort((a, b) => (a.nombre > b.nombre) ? 1 : -1);
+    // this.ordenadoAscendente = true;
   }
 
 
@@ -126,7 +173,7 @@ export class RecetasComponent implements OnInit {
     if (!this.ordenadoAscendente) {
       return;
     }
-    this.resetasListaBH$.value.sort((a, b) => (a.nombre < b.nombre) ? 1 : -1);
+    this.recetasListaBH$.value.sort((a, b) => (a.nombre < b.nombre) ? 1 : -1);
     this.ordenadoAscendente = false;
   }
 }
