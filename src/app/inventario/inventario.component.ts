@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
-import { fromEvent, BehaviorSubject, concat } from 'rxjs';
+import { fromEvent, BehaviorSubject, concat, from } from 'rxjs';
 import { map, debounceTime, pluck, distinctUntilChanged } from 'rxjs/operators';
+import { InventarioService } from '../inventario.service';
 
 @Component({
   selector: 'app-inventario',
@@ -9,94 +10,83 @@ import { map, debounceTime, pluck, distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./inventario.component.scss']
 })
 export class InventarioComponent implements OnInit {
+
+  menuOpc = [];
+
+  menuActivo = 'Todas';
+
   form: FormGroup;
 
-  ordenadoAscendente = null;
+  ingredientes = [];
 
-  busquedaValor = '';
-
-  listaInventarioFrutas = [
-    { url: 'assets/frijoles.jpg', nombre: 'Pera', cantidad: 2 },
-    { url: 'assets/frijoles.jpg', nombre: 'Manzana', cantidad: 2 },
-    { url: 'assets/frijoles.jpg', nombre: 'Platano', cantidad: 3 },
-  ];
-
-  listaInventarioVerduras = [
-    { url: 'assets/frijoles.jpg', nombre: 'Zanahoria', cantidad: 2 },
-    { url: 'assets/frijoles.jpg', nombre: 'Cebolla', cantidad: 3 },
-    { url: 'assets/frijoles.jpg', nombre: 'Espinaca', cantidad: 1 }
-  ];
-
-  listaInventario = this.listaInventarioFrutas.concat(this.listaInventarioVerduras);
-
-  busquedaLista: any[] = [];
-
-  frutasInventarioListaBH$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
-  verdurasInventarioListaBH$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
-  inventarioListaBH$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
+  listaInventarioCompleto = [{
+    nombreLista: 'Frutas',
+    lista: []
+  }, {
+    nombreLista: 'Verduras',
+    lista: []
+  }, {
+    nombreLista: 'Carnes',
+    lista: []
+  },
+  {
+    nombreLista: 'Otros',
+    lista: []
+  }];
 
 
-  constructor(private formBuilder: FormBuilder) { }
+  ingredientes$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
+
+  constructor(private inventario: InventarioService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.frutasInventarioListaBH$.next(this.listaInventarioFrutas);
-    this.verdurasInventarioListaBH$.next(this.listaInventarioVerduras);
-    this.inventarioListaBH$.next(this.listaInventario);
 
-    this.inventarioListaBH$.subscribe(() => {
-
+    this.menuOpc.push('Todas');
+    this.listaInventarioCompleto.forEach(element => {
+      this.menuOpc.push(element.nombreLista);
     });
-
-    const cajaDeBusqueda = document.getElementById('busqueda');
-    const keyup$ = fromEvent(cajaDeBusqueda, 'keyup');
-
-    keyup$.pipe(
-      pluck('target', 'value'),
-      map((value: string) => this.busquedaValor = value),
-      debounceTime(500),
-      distinctUntilChanged())
-      .subscribe(x => { this.buscarReceta(); console.log(x); });
-
-    this.form = this.formBuilder.group({
-      busqueda: this.formBuilder.control('', Validators.compose([])),
+    this.ingredientes$.next(this.inventario.listaIngredientes);
+    this.ingredientes$.subscribe(() => {
+      this.addToList();
     });
   }
 
+  ejecutarAdicion(index, item) {
+    this.listaInventarioCompleto[index].lista.push(item);
+    this.listaInventarioCompleto[index].lista.sort((a, b) => (a.nombre > b.nombre) ? 1 : -1);
+  }
 
-
-  buscarReceta() {
-    const listaTemporal: string[] = [];
-    this.busquedaLista = [];
-    let hasInclusive = false;
-
-    this.busquedaValor = this.busquedaValor.toUpperCase().replace(/\s/g, '').trim();
-    if (this.busquedaValor.length <= 3) {
-      this.inventarioListaBH$.next(this.listaInventario);
-      return;
-    } else {
-      this.inventarioListaBH$.value.forEach(element => {
-        listaTemporal.push(element.nombre.toUpperCase().replace(/\s/g, '').trim());
-      });
-
-      // let generalMatches = 0;
-      let elementoIn = 0;
-
-      listaTemporal.forEach(element => {
-        if (element.includes(this.busquedaValor)) {
-          this.busquedaLista.push(this.inventarioListaBH$.value[elementoIn]);
-          hasInclusive = true;
-        }
-        elementoIn++;
-      });
-
-      elementoIn = 0;
-
-      if (this.busquedaLista.length !== 0) {
-        this.inventarioListaBH$.next(this.busquedaLista);
+  addToList() {
+    this.ingredientes$.value.forEach(item => {
+      switch (item.categoria) {
+        case 'Frutas':
+          this.ejecutarAdicion(0, item);
+          break;
+        case 'Verduras':
+          this.ejecutarAdicion(1, item);
+          break;
+        case 'Carnes':
+          this.ejecutarAdicion(2, item);
+          break;
+        default:
+          this.ejecutarAdicion(3, item);
+          break;
       }
-
-    }
+    });
   }
 
+  cambiarShow(index) {
 
+    /*if (this.menuOpc[index] === 'Todas') {
+      this.listaActual = this.recetasLista;
+      this.recetasListaBH$.next(this.recetasLista);
+    } else if (this.menuOpc[index] === 'Listas') {
+      this.listaActual = this.recetasYaListas;
+      this.recetasListaBH$.next(this.recetasYaListas);
+    } else {
+      this.listaActual = this.recetasNoListas;
+      this.recetasListaBH$.next(this.recetasNoListas);
+    }*/
+
+  }
 }

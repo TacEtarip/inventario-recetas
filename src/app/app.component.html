@@ -1,7 +1,10 @@
 <section class="all-content">
   <div class="fixed">
     <header>
+
+      <mat-icon class="iconoP">fastfood</mat-icon>
       <span>WWIC</span>
+
       <button [ngClass]="{'changeColor': screen==='recetas'}" (click)="switchScreenToRecetas()"
         class="recetas boton-nav">Recetas</button>
       <button [ngClass]="{'changeColor': screen==='inventario'}" (click)="switchScreenToInventario()"

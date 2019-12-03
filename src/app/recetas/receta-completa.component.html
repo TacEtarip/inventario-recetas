@@ -13,11 +13,12 @@
         </mat-expansion-panel-header>
         <mat-list>
           <h3 mat-subheader>Principales</h3>
-          <mat-list-item *ngFor="let ingrediente of receta.ingredientes" role="listitem">
-            <mat-icon class="itsReady" mat-list-icon>check_circle</mat-icon>
+          <mat-list-item *ngFor="let ingrediente of receta.ingredientes; let i = index" role="listitem">
+            <mat-icon class="notReady" [ngClass]="{'itsReady': haySuficientesIngredientes(i)}" mat-list-icon>
+              check_circle</mat-icon>
             <h4 mat-line>{{ingrediente.nombre}}</h4>
             <h5>({{ingrediente.cantidad_necesaria}})</h5>
-            <p mat-line>Tienes 5</p>
+            <p mat-line>Tienes {{getCantidadIngredientes(i)}}</p>
           </mat-list-item>
           <mat-divider></mat-divider>
           <h3 *ngIf="getNumberOfExtraIngredients()" mat-subheader>Otros</h3>
@@ -42,8 +43,7 @@
         <button mat-button color="primary" (click)="nextStep()">Siguiente</button>
       </mat-action-row>
     </mat-expansion-panel>
-
-
-
+    <button [disabled]="botonHecho$.value" (click)="recetaRealizada()" mat-raised-button
+      class="botonFinal">Hecho</button>
   </mat-accordion>
 </section>

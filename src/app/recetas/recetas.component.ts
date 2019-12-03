@@ -4,6 +4,7 @@ import { fromEvent, BehaviorSubject } from 'rxjs';
 import { map, debounceTime, pluck, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RecetasService } from '../recetas.service';
+import { InventarioService } from '../inventario.service';
 import { debug } from 'util';
 @Component({
   selector: 'app-recetas',
@@ -38,11 +39,14 @@ export class RecetasComponent implements OnInit {
   constructor(
     private recetasService: RecetasService,
     private router: Router,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private inventario: InventarioService) {
     this.recetasLista = recetasService.recetasLista;
   }
 
   ngOnInit() {
+
+    this.checkRecetasReady();
     this.listaActual = this.recetasLista;
 
     this.recetasLista.forEach(receta => {
@@ -99,6 +103,23 @@ export class RecetasComponent implements OnInit {
     this.menuOpc[0] = this.menuOpc[index];
     this.menuOpc[index] = temporal;
 
+  }
+
+  checkRecetasReady() {
+    this.recetasLista.forEach(receta => {
+      let contador = 0;
+      receta.ingredientes.forEach(ingrediente => {
+        const busqueda = this.inventario.listaIngredientes.find(x => x.id === ingrediente.id);
+        if (busqueda) {
+          if (busqueda.cantidad >= ingrediente.cantidad_necesaria) {
+            contador++;
+          }
+        }
+      });
+      if (contador === receta.ingredientes.length) {
+        receta.listo = true;
+      }
+    });
   }
 
   irReceta(id) {

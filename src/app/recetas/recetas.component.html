@@ -6,15 +6,6 @@
       </button>
     </section>
     <section class="controles">
-      <!--
-      <mat-button-toggle-group class="toogle-buttons" #group="matButtonToggleGroup">
-        <mat-button-toggle (click)="ordernarListaDescendente()" value="descendente" aria-label="Text align left">
-          <img src="assets/sort-24px.svg" alt="">
-        </mat-button-toggle>
-        <mat-button-toggle (click)="ordernarListaAscendente()" value="ascendente" aria-label="Text align left">
-          <img src="assets/sort-25px.svg" alt="">
-        </mat-button-toggle>
-      </mat-button-toggle-group>-->
       <button class="selectorBTN" color="warn" mat-flat-button [matMenuTriggerFor]="menu">{{menuOpc[0]}}</button>
       <mat-menu #menu="matMenu">
         <button (click)="cambiarShow(1)" mat-menu-item>{{menuOpc[1]}}</button>
